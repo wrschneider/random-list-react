@@ -30,7 +30,7 @@ var WhichKid = React.createClass({
     if (!this.state.kidList) {
         return;
     }
-    i = new Date().getTime() % this.state.kidList.length;
+    i = Math.floor(Math.random()*this.state.kidList.length);
     this.setState({currentKid: this.state.kidList[i]});
     console.log('picked ' + this.state.currentKid);
   },
