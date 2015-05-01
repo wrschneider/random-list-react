@@ -1,6 +1,16 @@
+var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
+
+var _if = function _if(cond, x, y) {
+    if (cond) {
+        return x;
+    } else {
+        return y;
+    }
+};
+
 var WhichKid = React.createClass({
   getInitialState: function() {
-    return { kidList: [], currentKid: '' };
+    return { kidList: ['asdf', 'zxcv'], currentKid: '' };
   },
   
   addKid: function(event) {
@@ -9,6 +19,10 @@ var WhichKid = React.createClass({
     list.push(this.refs.newKid.getDOMNode().value);
     this.refs.newKid.getDOMNode().value = '';
     this.setState({kidList: list});
+  },
+  
+  hasKids: function() {
+    return this.state.kidList && this.state.kidList.length > 0;
   },
   
   pickOne: function() {
@@ -21,54 +35,37 @@ var WhichKid = React.createClass({
     console.log('picked ' + this.state.currentKid);
   },
   
-  renderCurrentKid: function() {
-      if (this.state.currentKid) {
-            return (
-                <div>Right now you love <strong>{this.state.currentKid}</strong> more.</div>
-            );
-        }
-  },
-
   deleteKid: function(i) {
     var list = this.state.kidList;
     list.splice(i, 1);
     this.setState({kidList: list});
   },
-  
-  renderKidList: function() {
-    var list = [];
-    
-    if (!this.state.kidList || this.state.kidList.length == 0) {
-        return (
-            <div>No kids defined yet</div>
-        );
-    }
-    
-    this.state.kidList.forEach(function(kid, i) {
-        list.push(<li>{kid}  <a href="#" onClick={this.deleteKid.bind(null, i)}>Delete</a> </li>)
-    }.bind(this));
-    
-    return (
-        <ul>{list}</ul>
-    );
-  },
-  
+
   render: function() {
-  
-    var pickOneLink = '';
-    
-    if (this.state.kidList && this.state.kidList.length > 0) {
-        pickOneLink = (<a href="#" onClick={this.pickOne}>Pick one</a>)
-    }
-    
     return (
       <div>
-        {this.renderKidList()}
+        {_if(!this.hasKids(), 
+            <div>No kids defined yet</div>,
+            <ul>
+            {this.state.kidList.map(function(kid, i) {
+                    return <li>{kid}  <a href="#" onClick={this.deleteKid.bind(null, i)}>Delete</a> </li>
+                }, this)
+            }
+            </ul>
+        )}
         <input ref="newKid" size="10" placeholder="enter kid name" defaultValue=''></input>
         <button onClick={this.addKid}>Add Kid</button>
         <br/>
-        {pickOneLink}
-        {this.renderCurrentKid()}
+        {_if(this.hasKids(), 
+            <a href="#" onClick={this.pickOne}>Pick one</a>
+        )}
+        <ReactCSSTransitionGroup transitionName="example">
+        {_if(this.state.currentKid, 
+            <div key="foo">
+            Right now you love <ReactCSSTransitionGroup transitionName="example"><strong key={new Date().getTime()}>{this.state.currentKid}</strong></ReactCSSTransitionGroup> more.
+            </div>
+        )}
+        </ReactCSSTransitionGroup> 
       </div>
     );
   }
